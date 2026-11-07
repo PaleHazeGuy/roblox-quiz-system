@@ -8,6 +8,13 @@
       "when": 1794041182378,
       "tag": "0000_create_players",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794073259494,
+      "tag": "0001_create_quizzes_questions",
+      "breakpoints": true
     }
   ]
 }
