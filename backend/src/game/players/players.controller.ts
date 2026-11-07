@@ -1,8 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { RobloxAuthGuard } from '../../common/guards/roblox-auth.guard.js';
 import { JoinPlayerDto } from './join-player.dto.js';
 import { PlayersService } from './players.service.js';
 
 @Controller('game/players')
+@UseGuards(RobloxAuthGuard)
 export class PlayersController {
   constructor(private readonly playersService: PlayersService) {}
 
