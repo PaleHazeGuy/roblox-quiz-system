@@ -16,6 +16,7 @@ export type Db = NodePgDatabase<typeof schema>;
       useFactory: (config: ConfigService) =>
         new pg.Pool({
           connectionString: config.getOrThrow<string>('DATABASE_URL'),
+          options: `-c timezone=${config.get<string>('APP_TIMEZONE') ?? 'UTC'}`,
         }),
     },
     {
