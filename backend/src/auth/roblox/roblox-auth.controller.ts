@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, Headers, HttpCode, Post } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { RobloxAuthService } from './roblox-auth.service.js';
 import { RobloxTokenDto } from './roblox-token.dto.js';
@@ -10,7 +10,10 @@ export class RobloxAuthController {
   @Post('token')
   @HttpCode(200)
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
-  token(@Body() dto: RobloxTokenDto) {
-    return this.auth.issueToken(dto);
+  token(
+    @Headers('x-api-secret') secret: string | undefined,
+    @Body() dto: RobloxTokenDto,
+  ) {
+    return this.auth.issueToken(secret, dto.placeId);
   }
 }

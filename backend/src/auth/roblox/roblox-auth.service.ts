@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { RobloxTokenDto } from './roblox-token.dto.js';
 
 const digest = (value: string) => createHash('sha256').update(value).digest();
 
@@ -17,9 +16,9 @@ export class RobloxAuthService {
     private readonly jwt: JwtService,
   ) {}
 
-  async issueToken(dto: RobloxTokenDto) {
+  async issueToken(secret: string | undefined, placeId: number) {
     const expected = digest(this.config.getOrThrow<string>('ROBLOX_API_SECRET'));
-    if (!timingSafeEqual(expected, digest(dto.secret))) {
+    if (!secret || !timingSafeEqual(expected, digest(secret))) {
       throw new UnauthorizedException();
     }
 
@@ -27,13 +26,13 @@ export class RobloxAuthService {
       .split(',')
       .map((id) => id.trim())
       .filter(Boolean);
-    if (allowed.length > 0 && !allowed.includes(String(dto.placeId))) {
+    if (allowed.length > 0 && !allowed.includes(String(placeId))) {
       throw new ForbiddenException();
     }
 
     const expiresIn = Number(this.config.get('ROBLOX_JWT_TTL_SECONDS') ?? 600);
     const token = await this.jwt.signAsync(
-      { sub: 'roblox', placeId: dto.placeId },
+      { sub: 'roblox', placeId },
       { expiresIn },
     );
     return { token, expiresIn };
